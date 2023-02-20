@@ -1,21 +1,32 @@
 import { useState } from "react";
-import { getTimeInputIsValid } from "./utils/validation";
+import { getTimeInputIsValid, getTimeIsValid } from "./utils/validation";
 
 const INITIAL_TIME = '10:00'
 
 const App = () => {
   const [startTime, setStartTime] = useState(INITIAL_TIME)
-
-  console.log(startTime);
-
+  const [hasError, setHasError] = useState(false)
+  
+  // validate & set time in state
   const handleTimeChange = (event) => {
     const time = event.target.value
+    const inputValid = getTimeInputIsValid(time)
 
-    if (!getTimeInputIsValid(time)) {
+    if (!inputValid) {
       return false
     }
 
     setStartTime(time)
+  }
+
+  const handleConfirm = () => {
+    setHasError(false)
+    const isValid = getTimeIsValid(startTime)
+
+    if (!isValid) {
+      setHasError(true)
+      return
+    }
   }
 
   return (
@@ -36,9 +47,14 @@ const App = () => {
 
         <button
           className="text-lg drop-shadow-xl bg-red-500 hover:bg-red-600 active:bg-red-700 transition-colors rounded mt-2 py-1 text-white appearance-none"
+          onClick={handleConfirm}
         >
           Calculate
         </button>
+
+        {hasError && (
+          <p className="text-red-500 mt-1 text-center">Please enter a valid time</p> 
+        )}
       </div>
 
       {/* output zone */}
