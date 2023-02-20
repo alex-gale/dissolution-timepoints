@@ -1,11 +1,15 @@
-import { useState } from "react";
-import { getTimeInputIsValid, getTimeIsValid } from "./utils/validation";
+import React, { useState } from "react";
+import { useTimepointCalculator } from "./utils/timepoints/use-timepoint-calculator";
+import { getTimeInputIsValid, getTimeIsValid } from "./utils/validation/time-validation";
 
 const INITIAL_TIME = '10:00'
 
 const App = () => {
   const [startTime, setStartTime] = useState(INITIAL_TIME)
-  const [hasError, setHasError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState(null)
+
+  const { isCalculating, timepointData, runCalculation } = useTimepointCalculator()
+  console.log(timepointData);
   
   // validate & set time in state
   const handleTimeChange = (event) => {
@@ -20,13 +24,15 @@ const App = () => {
   }
 
   const handleConfirm = () => {
-    setHasError(false)
-    const isValid = getTimeIsValid(startTime)
+    setErrorMessage(null)
+    const error = getTimeIsValid(startTime)
 
-    if (!isValid) {
-      setHasError(true)
+    if (error) {
+      setErrorMessage(error)
       return
     }
+
+    runCalculation(startTime)
   }
 
   return (
@@ -34,7 +40,13 @@ const App = () => {
       <h1 className="mt-5 text-[6vw] sm:text-[2em] font-title">Dissolution Timepoint Calculator</h1>
       
       {/* input zone */}
-      <div className="flex flex-col mt-5 w-full max-w-[435px]">
+      <form
+        className="flex flex-col mt-5 w-full max-w-[435px]"
+        onSubmit={(event) => {
+          event.preventDefault()
+          handleConfirm()
+        }}
+      >
         <label className="text-bas mb-0.5" htmlFor="start-time">Dissolution Start Time (24h)</label>
         <input
           value={startTime}
@@ -46,20 +58,23 @@ const App = () => {
         />
 
         <button
-          className="text-lg drop-shadow-xl bg-red-500 hover:bg-red-600 active:bg-red-700 transition-colors rounded mt-2 py-1 text-white appearance-none"
+          className="text-lg drop-shadow-xl bg-red-500 hover:bg-red-600 active:bg-red-700 transition-colors rounded mt-2 py-1 text-white appearance-none disabled:bg-red-300"
           onClick={handleConfirm}
+          disabled={isCalculating}
         >
           Calculate
         </button>
 
-        {hasError && (
-          <p className="text-red-500 mt-1 text-center">Please enter a valid time</p> 
+        {!!errorMessage && (
+          <p className="text-red-500 mt-1 text-center">{errorMessage}</p> 
         )}
-      </div>
+      </form>
 
       {/* output zone */}
       <div>
-
+        {isCalculating && (
+          <p className="mt-5">Calculating...</p>
+        )}
       </div>
     </div>
   );

@@ -39,14 +39,21 @@ const getTimeInputIsValid = (time) => {
   return true
 }
 
+// validate the time, returning an error message if it's invalid
 const getTimeIsValid = (time) => {
   const inputValid = getTimeInputIsValid(time)
   
   if (!inputValid || !timeRegex.test(time)) {
-    return false
+    return 'Please enter a valid time.'
   }
 
-  return true
+  const hour = Number(time.split(':')[0])
+  const minute = Number(time.split(':')[1])
+  if (hour > 12 || (hour === 12 && minute > 0)) {
+    return 'Please enter a time before 12:00pm.'
+  }
+
+  return null
 }
 
 export {
