@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { generateNumberArray } from '../array/array-utils'
 import { MIDDAY, REQUIRED_START_TIME_SEPERATION } from './timepoint-constants'
-import { calculateTimepoints, getHasClashes, getStartTimesSeperated } from './timepoint-utils'
+import { calculateTimepoints, calculateTimepointsScore, getHasClashes, getStartTimesSeperated } from './timepoint-utils'
 
 // function to calculate the best 3 start times for the experiments.
 onmessage = ({ data: startTime }) => {
@@ -36,8 +36,8 @@ onmessage = ({ data: startTime }) => {
   const timeUntilMidday = MIDDAY.diff(firstTime, 'minute')
   const possibleInitialTimePoints = generateNumberArray(timeUntilMidday, 1).map((i) => firstTime.add(i, 'minute'))
 
-  // generate a list of possible combinations of start times
-  const possibleStartTimes = []
+  // generate a list of possible combinations of start times and their scores
+  const possibleTimepoints = []
 
   for (let i = 0; i < possibleInitialTimePoints.length - 2; i++) {
     for (let j = i + 1; j < possibleInitialTimePoints.length - 1; j++) {
@@ -55,12 +55,27 @@ onmessage = ({ data: startTime }) => {
 
       // only add the times to the list if they include no clashes in timepoints & are seperated by at least 15 minutes
       if (!hasClashes && hasGoodSeperation) {
-        possibleStartTimes.push({
+        const {
+          closestTimeDiff,
+          lunchBreakLength,
+          score
+        } = calculateTimepointsScore(timepoints)
+
+        possibleTimepoints.push({
           timepoints,
+          lunchBreakLength,
+          closestTimeDiff,
+          score,
         })
       }
     }
   }
 
-  postMessage(possibleStartTimes)
+  // work out the best score and the timepoints that have that score
+  const scores = possibleTimepoints.map(({ score }) => score)
+  const bestScore = Math.max(...scores)
+  const bestTimepoints = possibleTimepoints.filter(({ score }) => score === bestScore)
+
+  // send the best timepoints back to the main thread
+  postMessage(bestTimepoints)
 }
