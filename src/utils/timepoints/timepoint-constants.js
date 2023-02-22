@@ -1,4 +1,4 @@
-import dayjs from "dayjs"
+import dayjs from 'dayjs'
 
 const MIDDAY = dayjs().set('hour', 12).set('minute', 0).set('second', 0)
 

@@ -13,7 +13,7 @@ onmessage = ({ data: startTime }) => {
 
   // cache to store the results of full timepoint calculations for later use
   const timepointCache = {
-    [firstTime.format('HH:mm')]: firstTimepoints,
+    [firstTime.format('HH:mm')]: firstTimepoints
   }
 
   // function to get the timepoints for a given time using either the cache or a fresh calculation
@@ -22,7 +22,7 @@ onmessage = ({ data: startTime }) => {
     const cachedValue = timepointCache[timeString]
 
     // if the timepoints have already been calculated, return them from the cache
-    if (!!cachedValue) {
+    if (cachedValue) {
       return cachedValue
     }
 
@@ -55,17 +55,11 @@ onmessage = ({ data: startTime }) => {
 
       // only add the times to the list if they include no clashes in timepoints & are seperated by at least 15 minutes
       if (!hasClashes && hasGoodSeperation) {
-        const {
-          closestTimeDiff,
-          lunchBreakLength,
-          score
-        } = calculateTimepointsScore(timepoints)
+        const scoreData = calculateTimepointsScore(timepoints)
 
         possibleTimepoints.push({
           timepoints,
-          lunchBreakLength,
-          closestTimeDiff,
-          score,
+          ...scoreData
         })
       }
     }

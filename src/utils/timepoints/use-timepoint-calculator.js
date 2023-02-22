@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react"
+import { useCallback, useState } from 'react'
 
 const useTimepointCalculator = () => {
   const [isCalculating, setIsCalculating] = useState(false)
@@ -18,15 +18,15 @@ const useTimepointCalculator = () => {
     // create a new worker to run the calculation on another thread
     const timepointWorker = new Worker(new URL('./timepoint-worker.js', import.meta.url))
     timepointWorker.postMessage(startTime)
-    
+
     timepointWorker.onmessage = ({ data }) => onCalculationFinish(data, timepointWorker)
-    timepointWorker.onerror = (error) => onCalculationFinish(null, timepointWorker)
+    timepointWorker.onerror = () => onCalculationFinish(null, timepointWorker)
   }, [onCalculationFinish])
 
   return {
     runCalculation,
     timepointData,
-    isCalculating,
+    isCalculating
   }
 }
 

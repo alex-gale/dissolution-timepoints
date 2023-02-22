@@ -69,13 +69,14 @@ const calculateTimepointsScore = (timepoints) => {
   const lunchStartIndex = lunchStartTime ? sortedTimepoints.indexOf(lunchStartTime) : null
   const nextTime = lunchStartIndex ? sortedTimepoints[lunchStartIndex + 1] : null
 
-  const lunchBreakLength = nextTime ? nextTime.diff(lunchStartTime, 'minute') : 0
+  const lunchDuration = nextTime ? nextTime.diff(lunchStartTime, 'minute') : 0
 
   return {
-    lunchBreakLength,
+    lunchDuration,
+    lunchStartTime,
     closestTimeDiff,
     // score will be the length of the lunch break multiplied by the tightest time gap
-    score: lunchBreakLength * closestTimeDiff
+    score: lunchDuration * closestTimeDiff
   }
 }
 
