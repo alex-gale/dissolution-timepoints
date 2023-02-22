@@ -6,7 +6,7 @@ const getTimeInputIsValid = (time) => {
   const [hoursStr, minutesStr] = time.split(':')
 
   if (!inputRegex.test(time)) {
-      return false
+    return false
   }
 
   const hours = Number(hoursStr)
@@ -16,24 +16,24 @@ const getTimeInputIsValid = (time) => {
   const isValidMinutes = (minutes) => (Number.isInteger(minutes) && hours >= 0 && hours < 24) || Number.isNaN(minutes)
 
   if (!isValidHour(hours) || !isValidMinutes(minutes)) {
-      return false
+    return false
   }
 
   if (minutes < 10 && Number(minutesStr[0]) > 5) {
-      return false
+    return false
   }
 
   const valArr = time.indexOf(':') !== -1
-      ? time.split(':')
-      : [time]
+    ? time.split(':')
+    : [time]
 
   // check mm and HH
   if (valArr[0] && valArr[0].length && (parseInt(valArr[0], 10) < 0 || parseInt(valArr[0], 10) > 23)) {
-      return false
+    return false
   }
 
   if (valArr[1] && valArr[1].length && (parseInt(valArr[1], 10) < 0 || parseInt(valArr[1], 10) > 59)) {
-      return false
+    return false
   }
 
   return true
@@ -42,7 +42,7 @@ const getTimeInputIsValid = (time) => {
 // validate the time, returning an error message if it's invalid
 const getTimeIsValid = (time) => {
   const inputValid = getTimeInputIsValid(time)
-  
+
   if (!inputValid || !timeRegex.test(time)) {
     return 'Please enter a valid time.'
   }
@@ -58,5 +58,5 @@ const getTimeIsValid = (time) => {
 
 export {
   getTimeInputIsValid,
-  getTimeIsValid,
+  getTimeIsValid
 }

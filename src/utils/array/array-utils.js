@@ -2,5 +2,5 @@
 const generateNumberArray = (n, offset = 0) => [...Array(n).keys()].map((i) => i + offset)
 
 export {
-  generateNumberArray,
+  generateNumberArray
 }
