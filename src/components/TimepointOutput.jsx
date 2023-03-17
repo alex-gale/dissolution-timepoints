@@ -1,8 +1,25 @@
 import dayjs from 'dayjs'
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
+import { TableView } from './TableView'
+import { ColumnView } from './ColumnView'
+
+const VIEW_MODE_TABLE = 'table'
+const VIEW_MODE_COLUMN = 'column'
+
+const viewModeComponentMap = {
+  [VIEW_MODE_TABLE]: TableView,
+  [VIEW_MODE_COLUMN]: ColumnView
+}
 
 const TimepointOutput = ({ timepointData = [] }) => {
+  const [viewMode, setViewMode] = useState(VIEW_MODE_TABLE)
+
+  const toggleViewMode = () => {
+    const newViewMode = viewMode === VIEW_MODE_TABLE ? VIEW_MODE_COLUMN : VIEW_MODE_TABLE
+    setViewMode(newViewMode)
+  }
+
   const [bestTimePointData = {}] = timepointData
 
   const {
@@ -27,6 +44,9 @@ const TimepointOutput = ({ timepointData = [] }) => {
   const fixedLunchTime = dayjs(lunchStartTime.$d)
   const formattedLunchTime = fixedLunchTime.format('HH:mm')
 
+  const toggleButtonText = viewMode === VIEW_MODE_TABLE ? 'Switch to column mode' : 'Switch to table mode'
+  const TimepointRenderer = viewModeComponentMap[viewMode]
+
   return (
     <div>
       {/* lunch & seperation data */}
@@ -47,28 +67,14 @@ const TimepointOutput = ({ timepointData = [] }) => {
       </div>
 
       {/* timepoints display table */}
-      <h1 className="font-title text-center mb-2">Timepoints</h1>
-      <div className="grid grid-cols-3">
-        {fixedTimepoints.map((timepointArray) => (
-          <div
-            key={`${timepointArray[0].format('HH:mm')}-column`}
-            className="first:border-r last:border-l border-gray-300"
-          >
-            {timepointArray.map((timepoint) => {
-              const timepointString = timepoint.format('HH:mm:ss')
-
-              return (
-                <p
-                  key={`${timepointString}`}
-                  className="text-center first:font-bold first:text-xl"
-                >
-                  {timepointString}
-                </p>
-              )
-            })}
-          </div>
-        ))}
-      </div>
+      <button
+        type="button"
+        className="mb-2 text-center w-full appearance-none py-1 rounded bg-gray-100 hover:bg-gray-200 active:bg-gray-300 transition-colors text-sm"
+        onClick={toggleViewMode}
+      >
+        {toggleButtonText}
+      </button>
+      <TimepointRenderer timepoints={fixedTimepoints} />
     </div>
   )
 }
