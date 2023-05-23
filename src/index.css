@@ -3,3 +3,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.progress-bar[aria-valuenow="0"] {
+    transition: none;
+}

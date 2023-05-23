@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import ProgressBar from 'react-bootstrap/ProgressBar'
 import { TimepointOutput } from './components/TimepointOutput'
 import { useTimepointCalculator } from './utils/timepoints/use-timepoint-calculator'
 import { getTimeInputIsValid, getTimeIsValid } from './utils/validation/time-validation'
@@ -9,7 +10,12 @@ const App = () => {
   const [startTime, setStartTime] = useState(INITIAL_TIME)
   const [errorMessage, setErrorMessage] = useState(null)
 
-  const { isCalculating, timepointData, runCalculation } = useTimepointCalculator()
+  const {
+    isCalculating,
+    timepointData,
+    calculationProgress,
+    runCalculation
+  } = useTimepointCalculator()
 
   // validate & set time in state
   const handleTimeChange = (event) => {
@@ -76,7 +82,7 @@ const App = () => {
           <div className='w-full mt-6 p-3 bg-white rounded shadow-xl mb-5'>
             {
               isCalculating
-                ? <p>Calculating...</p>
+                ? <ProgressBar striped now={calculationProgress * 200} />
                 : <TimepointOutput timepointData={timepointData} />
             }
           </div>

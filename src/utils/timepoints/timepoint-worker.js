@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import { generateNumberArray } from '../array/array-utils'
-import { MIDDAY, REQUIRED_START_TIME_SEPERATION } from './timepoint-constants'
+import { MESSAGE_TYPE_CALCULATION_FINISHED, MESSAGE_TYPE_PROGRESS_UPDATE, MIDDAY, REQUIRED_START_TIME_SEPERATION } from './timepoint-constants'
 import { calculateTimepoints, calculateTimepointsScore, getHasClashes, getStartTimesSeperated } from './timepoint-utils'
 
 // function to calculate the best 3 start times for the experiments.
@@ -35,11 +35,20 @@ onmessage = ({ data: startTime }) => {
   // generate list of valid start times before midday
   const timeUntilMidday = MIDDAY.diff(firstTime, 'minute')
   const possibleInitialTimePoints = generateNumberArray(timeUntilMidday, 1).map((i) => firstTime.add(i, 'minute'))
+  const possibleInitialTimePointsCount = possibleInitialTimePoints.length
 
   // generate a list of possible combinations of start times and their scores
   const possibleTimepoints = []
 
-  for (let i = 0; i < possibleInitialTimePoints.length - 2; i++) {
+  for (let i = 0; i < possibleInitialTimePointsCount - 2; i++) {
+    const progress = i / possibleInitialTimePointsCount
+
+    // send a progress update to the main thread
+    postMessage({
+      type: MESSAGE_TYPE_PROGRESS_UPDATE,
+      payload: progress
+    })
+
     for (let j = i + 1; j < possibleInitialTimePoints.length - 1; j++) {
       /* get second and third time and their timepoints, from cache or otherwise */
       const secondTime = possibleInitialTimePoints[i]
@@ -71,5 +80,8 @@ onmessage = ({ data: startTime }) => {
   const bestTimepoints = possibleTimepoints.filter(({ score }) => score === bestScore)
 
   // send the best timepoints back to the main thread
-  postMessage(bestTimepoints)
+  postMessage({
+    type: MESSAGE_TYPE_CALCULATION_FINISHED,
+    payload: bestTimepoints
+  })
 }
