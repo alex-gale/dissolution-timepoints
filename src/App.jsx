@@ -46,6 +46,9 @@ const App = () => {
       <div className='w-full max-w-[450px]'>
         <h1 className='mt-5 text-[6vw] sm:text-[2em] font-title text-center'>Dissolution Timepoint Calculator</h1>
 
+        <p className='text-center'>Dear Em, I love you and I believe in you ❤️ I hope your dissolution goes well today and you are not too stressed 🥰🍓🍄</p>
+        <p className='text-center'>Lots of love from Alex</p>
+
         {/* input zone */}
         <form
           className='flex flex-col mt-5 w-full'
